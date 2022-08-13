@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,9 @@ func main() {
 	//handler route for (POST)/albums
 	router.POST("albums", postAlbums)
 
+	//handler rpute for (get)/algums/:id
+	router.GET("albums/:id", GetAlbumById)
+
 	//server listening
 	router.Run("localhost:8080")
 }
@@ -49,4 +53,23 @@ func postAlbums(c *gin.Context) {
 	//Add the new album to the slice
 	albums = append(albums, newAlbum)
 	c.IndentedJSON(http.StatusCreated, newAlbum)
+}
+
+// GetalbumById returns an album that matches the id field
+func GetAlbumById(c *gin.Context) {
+	//getting id param
+	/* id := c.Param("id") */
+	id := c.Params.ByName("id")
+	fmt.Println(id)
+
+	//look for album
+	for _, a := range albums {
+		if a.Id == id {
+			c.IndentedJSON(http.StatusFound, a)
+			return
+		}
+	}
+
+	//if album not found
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
