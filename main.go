@@ -27,10 +27,26 @@ func main() {
 	//Handler route for (GET)/albums
 	router.GET("/albums", getAlbums)
 
+	//handler route for (POST)/albums
+	router.POST("albums", postAlbums)
+
 	//server listening
 	router.Run("localhost:8080")
 }
 
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
+}
+
+func postAlbums(c *gin.Context) {
+	var newAlbum album
+
+	//CallBind json to bind the recieved json to object
+	if error := c.BindJSON(&newAlbum); error != nil {
+		return
+	}
+
+	//Add the new album to the slice
+	albums = append(albums, newAlbum)
+	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
